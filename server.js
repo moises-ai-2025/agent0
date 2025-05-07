@@ -74,8 +74,26 @@ app.get("/api/sandboxes", (req, res) => {
   });
 });
 
-// Iniciar o servidor
+// Adicionar mais informações de debug
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('Endereço IP:', '0.0.0.0');
+console.log('---------------------------------------');
+
+// Adicionar um endpoint de health que responde IMEDIATAMENTE
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Iniciar o servidor com binding para todos os endereços
 const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor rodando na porta ${port}`);
-  console.log('Servidor pronto para receber conexões');
+  console.log(`Servidor rodando na porta ${port} em todos os endereços IP`);
+  console.log('Servidor pronto para receber conexões!');
+});
+
+// Lidar com erros de servidor
+server.on('error', (err) => {
+  console.error('Erro no servidor:', err.message);
+  if (err.code === 'EADDRINUSE') {
+    console.error(`A porta ${port} já está em uso!`);
+  }
 });
