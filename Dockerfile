@@ -21,11 +21,13 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /
 # Criar diretório de trabalho
 WORKDIR /app
 
-# Baixar o instalador do Daytona usando curl em vez de git clone
-RUN curl -L -o installer.zip https://github.com/daytonaio/installer/archive/refs/heads/main.zip \
-    && unzip installer.zip \
-    && cp -r installer-main/* /app/ \
-    && rm -rf installer.zip installer-main
+# Baixar o instalador do Daytona usando wget em vez de curl (mais confiável)
+RUN wget -O installer.zip https://github.com/daytonaio/installer/archive/refs/heads/main.zip \
+    && unzip -q installer.zip \
+    && ls -la \
+    && cp -r installer-main*/* /app/ || cp -r daytona-installer-main*/* /app/ \
+    && ls -la \
+    && rm -rf installer.zip installer-main*
 
 # Configurar variáveis de ambiente
 ENV URL="your-domain.com"
