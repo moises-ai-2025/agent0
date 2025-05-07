@@ -1,10 +1,28 @@
 const express = require("express");
 const app = express();
+
+// Usar a porta definida pelo Railway ou 3000 como fallback
 const port = process.env.PORT || 3000;
 const url = process.env.URL || "localhost";
 
+// Imprimir todas as variáveis de ambiente para debug (removendo valores sensíveis)
+console.log('PORT:', process.env.PORT);
+console.log('URL:', process.env.URL);
+console.log('GITHUB_CLIENT_ID presente:', !!process.env.GITHUB_CLIENT_ID);
+console.log('GITHUB_CLIENT_SECRET presente:', !!process.env.GITHUB_CLIENT_SECRET);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Adicionar endpoint de health check para o Railway
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Adicionar rota ping para verificações rápidas
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
 
 app.get("/", (req, res) => {
   res.send(`
@@ -60,6 +78,24 @@ app.get("/api/sandboxes", (req, res) => {
   });
 });
 
-app.listen(port, '0.0.0.0', () => {
+// Iniciar o servidor
+const server = app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor rodando na porta ${port} e acessível em ${url}`);
+});
+
+// Lidar com sinais de encerramento
+process.on('SIGTERM', () => {
+  console.log('SIGTERM recebido, encerrando servidor...');
+  server.close(() => {
+    console.log('Servidor encerrado de forma limpa');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT recebido, encerrando servidor...');
+  server.close(() => {
+    console.log('Servidor encerrado de forma limpa');
+    process.exit(0);
+  });
 });
