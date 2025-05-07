@@ -19,8 +19,5 @@ RUN npm install
 # Expor porta
 EXPOSE 3000
 
-# Copiar o script keep-alive
-COPY keep-alive.js /app/
-
-# Iniciar usando o script keep-alive
-CMD ["node", "keep-alive.js"]
+# Iniciar diretamente o servidor Express
+CMD ["npm", "start"]

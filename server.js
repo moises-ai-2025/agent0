@@ -3,13 +3,8 @@ const app = express();
 
 // Usar a porta definida pelo Railway ou 3000 como fallback
 const port = process.env.PORT || 3000;
-const url = process.env.URL || "localhost";
 
-// Imprimir todas as variáveis de ambiente para debug (removendo valores sensíveis)
-console.log('PORT:', process.env.PORT);
-console.log('URL:', process.env.URL);
-console.log('GITHUB_CLIENT_ID presente:', !!process.env.GITHUB_CLIENT_ID);
-console.log('GITHUB_CLIENT_SECRET presente:', !!process.env.GITHUB_CLIENT_SECRET);
+console.log('Iniciando servidor Express na porta:', port);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -80,22 +75,6 @@ app.get("/api/sandboxes", (req, res) => {
 
 // Iniciar o servidor
 const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor rodando na porta ${port} e acessível em ${url}`);
-});
-
-// Lidar com sinais de encerramento
-process.on('SIGTERM', () => {
-  console.log('SIGTERM recebido, encerrando servidor...');
-  server.close(() => {
-    console.log('Servidor encerrado de forma limpa');
-    process.exit(0);
-  });
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT recebido, encerrando servidor...');
-  server.close(() => {
-    console.log('Servidor encerrado de forma limpa');
-    process.exit(0);
-  });
+  console.log(`Servidor rodando na porta ${port}`);
+  console.log('Servidor pronto para receber conexões');
 });
