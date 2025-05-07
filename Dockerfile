@@ -3,7 +3,8 @@ FROM ubuntu:22.04
 # Instalar dependências
 RUN apt-get update && apt-get install -y \
     curl \
-    git \
+    wget \
+    unzip \
     ca-certificates \
     gnupg \
     lsb-release \
@@ -20,8 +21,11 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /
 # Criar diretório de trabalho
 WORKDIR /app
 
-# Baixar o instalador do Daytona
-RUN git clone https://github.com/daytonaio/installer.git /app
+# Baixar o instalador do Daytona usando curl em vez de git clone
+RUN curl -L -o installer.zip https://github.com/daytonaio/installer/archive/refs/heads/main.zip \
+    && unzip installer.zip \
+    && cp -r installer-main/* /app/ \
+    && rm -rf installer.zip installer-main
 
 # Configurar variáveis de ambiente
 ENV URL="your-domain.com"
