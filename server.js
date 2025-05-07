@@ -1,11 +1,16 @@
 const express = require("express");
 const app = express();
 
-// Usar a porta definida pelo Railway ou fallbacks
-const port = process.env.PORT || process.env.RAILWAY_PORT || 8080;
+// IMPORTANTE: Usar a porta fornecida pelo Railway - padrão é 3000
+const port = process.env.PORT || 3000;
 
-console.log('Iniciando servidor Express na porta:', port);
-console.log('Variáveis de ambiente disponíveis:', Object.keys(process.env).filter(k => !k.includes('SECRET')).join(', '));
+// Simplificando para mostrar TODOS os valores das variáveis para depuração
+console.log('====================== DIAGNÓSTICO ======================');
+console.log('PORT:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('RAILWAY_PUBLIC_DOMAIN:', process.env.RAILWAY_PUBLIC_DOMAIN);
+console.log('RAILWAY_PRIVATE_DOMAIN:', process.env.RAILWAY_PRIVATE_DOMAIN);
+console.log('====================== FIM DIAGNÓSTICO ======================');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -74,26 +79,29 @@ app.get("/api/sandboxes", (req, res) => {
   });
 });
 
-// Adicionar mais informações de debug
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('Endereço IP:', '0.0.0.0');
-console.log('---------------------------------------');
-
-// Adicionar um endpoint de health que responde IMEDIATAMENTE
+// Simplificando o endpoint de health
 app.get('/healthz', (req, res) => {
-  res.status(200).send('OK');
+  console.log('Recebido request no /healthz!');
+  return res.status(200).send('OK - Servidor funcional');
 });
 
-// Iniciar o servidor com binding para todos os endereços
+// Adicionar endpoints para monitoramento mais detalhado
+app.get('/status', (req, res) => {
+  return res.status(200).json({
+    status: 'UP',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    env: process.env.NODE_ENV || 'development',
+    port: port,
+    memoryUsage: process.memoryUsage()
+  });
+});
+
+// IMPORTANTE: Iniciar o servidor garantindo que escute em TODOS os endereços
 const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor rodando na porta ${port} em todos os endereços IP`);
-  console.log('Servidor pronto para receber conexões!');
-});
-
-// Lidar com erros de servidor
-server.on('error', (err) => {
-  console.error('Erro no servidor:', err.message);
-  if (err.code === 'EADDRINUSE') {
-    console.error(`A porta ${port} já está em uso!`);
-  }
+  console.log(`===== SERVIDOR PRONTO =====`);
+  console.log(`Porta: ${port}`);
+  console.log(`Host: 0.0.0.0 (todos os endereços IP)`);
+  console.log(`URL: ${process.env.RAILWAY_PUBLIC_DOMAIN || 'http://localhost:'+port}`);
+  console.log(`=========================`);
 });
