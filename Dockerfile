@@ -16,8 +16,8 @@ COPY server.js /app/
 # Instalar dependências
 RUN npm install
 
-# Expor porta
-EXPOSE 3000
+# Expor ambas as portas (3000 e 8080) para maior compatibilidade
+EXPOSE 3000 8080
 
 # Iniciar diretamente o servidor Express
 CMD ["npm", "start"]
