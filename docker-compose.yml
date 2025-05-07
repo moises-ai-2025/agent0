@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  daytona-server:
+    image: daytonaio/server:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - URL=${URL}
+      - IDP=${IDP}
+      - IDP_ID=${IDP_ID}
+      - IDP_SECRET=${IDP_SECRET}
+    volumes:
+      - daytona-data:/data
+
+volumes:
+  daytona-data:
