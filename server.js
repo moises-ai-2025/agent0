@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
 
-// Usar a porta definida pelo Railway ou 3000 como fallback
-const port = process.env.PORT || 3000;
+// Usar a porta definida pelo Railway, 8080 como padrão ou 3000 como fallback
+const port = process.env.PORT || 8080;
 
 console.log('Iniciando servidor Express na porta:', port);
+console.log('Variáveis de ambiente disponíveis:', Object.keys(process.env).filter(k => !k.includes('SECRET')).join(', '));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
